@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Consulta Médica - Inicio</title>
+</head>
+<body class="container">
+    <header>
+        <h3>Bienvenido al Sistema de Consulta Médica de Osmel Larry</h3>
+        <nav>
+            <ul>
+                <li><a href="{% url 'logout' %}">Cerrar Sesión</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <h2>Reservar una Cita</h2>
+        <form method="POST" action="{% url 'book_appointment' %}">
+            {% csrf_token %}
+            <label for="date">Seleccionar Fecha:</label>
+            <input type="date" id="date" name="date" required>
+            <label for="time">Seleccionar Hora:</label>
+            <input type="time" id="time" name="time" required>
+            <button type="submit">Reservar Cita</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2023 Sistema de Consultas del Dr Osmel Larry</p>
+    </footer>
+</body>
+</html>
