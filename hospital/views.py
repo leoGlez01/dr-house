@@ -1,10 +1,11 @@
-from django.http import HttpResponse
+from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils.dateparse import parse_date, parse_time
+from .models import Appointment, Doctor, Patient
+from .forms import CustomUserCreationForm
 
 def home(request):
     if not request.user.is_authenticated:
@@ -13,16 +14,19 @@ def home(request):
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.role = 'patient'
+            user.save()
+            Patient.objects.create(user=user)
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password1')
             user = authenticate(username=username, password=password)
             login(request, user)
             return redirect('home')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'appointments/register.html', {'form': form})
 
 def user_login(request):
@@ -50,6 +54,15 @@ def book_appointment(request):
             parsed_time = parse_time(time)
             
             if parsed_date and parsed_time:
+                # Crear y guardar la cita
+                Appointment.objects.create(
+                    patient=request.user,
+                    doctor=Doctor.objects.first(),  # Asigna un doctor adecuado aquí
+                    appointment_date=parsed_date,
+                    start_time=parsed_time,
+                    end_time=(datetime.combine(parsed_date, parsed_time) + timedelta(hours=1)).time(),
+                    status='confirmed'
+                )
                 messages.success(request, "Cita reservada con éxito.")
                 return redirect('home')
             else:
@@ -59,3 +72,9 @@ def book_appointment(request):
     
     messages.error(request, "Método de solicitud no válido.")
     return redirect('home')
+
+
+@login_required
+def view_appointments(request):
+    appointments = Appointment.objects.filter(patient=request.user)
+    return render(request, 'appointments/view_appointments.html', {'appointments': appointments})

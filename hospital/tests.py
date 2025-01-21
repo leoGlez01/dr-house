@@ -27,6 +27,6 @@ class AppointmentViewTest(TestCase):
 
     def test_appointment_list_view(self):
         self.client.login(username='testuser', password='testpass')
-        response = self.client.get(reverse('appointments:home'))
+        response = self.client.get(reverse('hospital:home'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'appointments/home.html')
+        self.assertTemplateUsed(response, 'hospital/home.html')

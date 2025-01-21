@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis Citas Reservadas</title>
+</head>
+<body>
+    <h1>Mis Citas Reservadas</h1>
+    <ul>
+        {% for appointment in appointments %}
+            <li>{{ appointment.appointment_date }} a las {{ appointment.start_time }} con el Dr. {{ appointment.doctor.user.full_name }}</li>
+        {% empty %}
+            <li>No tienes citas reservadas.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'home' %}">Volver a Inicio</a>
+</body>
+</html>
