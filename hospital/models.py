@@ -14,6 +14,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, username, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('role', 'doctor')  # Asignar el rol de doctor para superusuarios
 
         return self.create_user(username, email, password, **extra_fields)
 
@@ -22,13 +23,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(max_length=255, unique=True)
     role = models.CharField(max_length=20, choices=[('patient', 'patient'), ('doctor', 'doctor')])
-    full_name = models.CharField(max_length=255)
+    full_name = models.CharField(max_length=255, blank=True)
     phone_number = models.CharField(max_length=15, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    last_login = models.DateTimeField(null=True, blank=True)  # Agregar este campo
+    last_login = models.DateTimeField(null=True, blank=True)
 
     objects = UserManager()
 
@@ -38,6 +39,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = 'users'
         managed = False
+
+class Doctor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    specialty = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.user.full_name
 
 class Specialty(models.Model):
     id = models.AutoField(primary_key=True)

@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Panel del Doctor</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Panel del Doctor</h1>
+        <ul>
+            {% for appointment in appointments %}
+                <li>
+                    {{ appointment.appointment_date }} a las {{ appointment.start_time }} con {{ appointment.patient.full_name }}
+                    <a href="{% url 'update_appointment_status' appointment.id 'confirmed' %}">Confirmar</a>
+                    <a href="{% url 'update_appointment_status' appointment.id 'cancelled' %}">Cancelar</a>
+                </li>
+            {% empty %}
+                <li>No tienes citas pendientes.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'logout' %}">Cerrar Sesión</a>
+    </div>
+</body>
+</html>

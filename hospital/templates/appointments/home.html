@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <title>Consulta Médica - Inicio</title>
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-container label, .form-container input, .form-container select, .form-container button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .form-container button {
+            width: auto;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body class="container">
     <header>
@@ -26,14 +41,22 @@
             </div>
         {% endif %}
         <h2>Reservar una Cita</h2>
-        <form method="POST" action="{% url 'book_appointment' %}">
-            {% csrf_token %}
-            <label for="date">Seleccionar Fecha:</label>
-            <input type="date" id="date" name="date" required>
-            <label for="time">Seleccionar Hora:</label>
-            <input type="time" id="time" name="time" required>
-            <button type="submit">Reservar Cita</button>
-        </form>
+        <div class="form-container">
+            <form method="POST" action="{% url 'book_appointment' %}">
+                {% csrf_token %}
+                <label for="date">Seleccionar Fecha:</label>
+                <input type="date" id="date" name="date" required>
+                <label for="time">Seleccionar Hora:</label>
+                <input type="time" id="time" name="time" required>
+                <label for="doctor">Seleccionar Doctor:</label>
+                <select id="doctor" name="doctor" required>
+                    {% for doctor in doctors %}
+                        <option value="{{ doctor.id }}">{{ doctor.user.full_name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Reservar Cita</button>
+            </form>
+        </div>
     </main>
     <footer>
         <p>&copy; 2023 Sistema de Consultas del Dr Osmel Larry</p>
